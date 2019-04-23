@@ -25,7 +25,7 @@ ROOT::RVec<int> good_jets(Vec<float> eta1, Vec<float> phi1, Vec<float> pt2, Vec<
 
 
 void rdataframe() {
-    ROOT::RDataFrame df("Events", "/home/stefan/opendata_samples/Run2012B_SingleMu.root");
+    ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto h = df.Range(1e5)
                .Filter("nJet > 0", "At least one jet")
                .Define("goodJet_antiMuon", good_jets, {"Jet_eta", "Jet_phi", "Muon_pt", "Muon_eta", "Muon_phi"})
