@@ -39,9 +39,9 @@ float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
 
 
 void rdataframe() {
+    ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
-    auto df2 = df.Range(1e5)
-                 .Filter("nElectron + nMuon > 2", "At least three leptons")
+    auto df2 = df.Filter("nElectron + nMuon > 2", "At least three leptons")
                  .Define("Lepton_pt", "Concatenate(Muon_pt, Electron_pt)")
                  .Define("Lepton_eta", "Concatenate(Muon_eta, Electron_eta)")
                  .Define("Lepton_phi", "Concatenate(Muon_phi, Electron_phi)")

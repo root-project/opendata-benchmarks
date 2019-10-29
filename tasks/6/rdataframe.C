@@ -30,9 +30,9 @@ ROOT::RVec<std::size_t> find_trijet(Vec<float> pt, Vec<float> eta, Vec<float> ph
 
 
 void rdataframe() {
+    ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
-    auto df2 = df.Range(1e5)
-                 .Filter("nJet >= 3", "At least three jets")
+    auto df2 = df.Filter("nJet >= 3", "At least three jets")
                  .Define("Trijet_idx", find_trijet, {"Jet_pt", "Jet_eta", "Jet_phi", "Jet_mass"});
     auto h1 = df2.Define("Trijet_pt", "Take(Jet_pt, Trijet_idx)")
                  .Histo1D({"", ";Trijet pt (GeV);N_{Events}", 100, 15, 40}, "Trijet_pt");
