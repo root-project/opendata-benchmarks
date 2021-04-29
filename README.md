@@ -1,10 +1,12 @@
 # Sofware benchmarks with open data
 
-**NOTE:** This repo contains two versions of the RDataFrame implementation. One version includes just-in-time compilation and the other is fully compiled and therefore optimized for performance. To compile any of the benchmarks named `*_compiled.C`, source ROOT and run following line:
+**NOTE:** This repo contains two versions of the RDataFrame implementation. One version includes just-in-time compilation and the other is fully compiled and therefore optimized for performance. Also, running the files as C++ macro, via the ROOT interpreter cling, will result in a reduced runtime performance due to missing optimizations. To compile any of the benchmarks named `*_compiled.C`, source ROOT and run following line:
 
 ```
 g++ file.C $(root-config --cflags --libs) -O3
 ```
+
+The implementations of the benchmarks tracked by the ROOT team can be found [in root-project/rootbench](https://github.com/root-project/rootbench/blob/master/root/tree/dataframe/RDataFrameOpenDataBenchmarks.cxx).
 
 Just an example what is possible with the existing open data.
 
