@@ -1,5 +1,11 @@
 # Sofware benchmarks with open data
 
+**NOTE:** This repo contains two versions of the RDataFrame implementation. One version includes just-in-time compilation and the other is fully compiled and therefore optimized for performance. To compile any of the benchmarks named `*_compiled.C`, source ROOT and run following line:
+
+```
+g++ file.C $(root-config --cflags --libs) -O3
+```
+
 Just an example what is possible with the existing open data.
 
 List of tasks:
