@@ -59,4 +59,5 @@ void rdataframe() {
 
 int main() {
     rdataframe();
+    return 0;
 }
