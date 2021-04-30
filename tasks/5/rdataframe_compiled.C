@@ -9,8 +9,8 @@ using FourVector = ROOT::Math::PtEtaPhiMVector;
 auto compute_dimuon_masses(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge)
 {
     ROOT::RVec<float> masses;
-    const auto c = ROOT::VecOps::Combinations(pt.size(), 2);
-    for (auto i = 0; i < pt.size(); i++) {
+    const auto c = ROOT::VecOps::Combinations(pt, 2);
+    for (auto i = 0; i < c[0].size(); i++) {
         const auto i1 = c[0][i];
         const auto i2 = c[1][i];
         if (charge[i1] == charge[i2]) continue;
