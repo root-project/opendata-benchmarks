@@ -34,7 +34,7 @@ void rdataframe() {
 
     TCanvas c;
     h->Draw();
-    c.SaveAs("5_rdataframe.png");
+    c.SaveAs("5_rdataframe_compiled.png");
 }
 
 int main() {

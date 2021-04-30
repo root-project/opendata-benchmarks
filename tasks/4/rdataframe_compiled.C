@@ -12,7 +12,7 @@ void rdataframe() {
 
     TCanvas c;
     h->Draw();
-    c.SaveAs("4_rdataframe.png");
+    c.SaveAs("4_rdataframe_compiled.png");
 }
 
 int main() {

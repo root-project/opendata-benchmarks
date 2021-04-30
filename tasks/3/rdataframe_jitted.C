@@ -1,4 +1,4 @@
-void rdataframe() {
+void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto h = df.Define("goodJet_pt", "Jet_pt[Jet_eta > 1.0]")
@@ -6,5 +6,5 @@ void rdataframe() {
 
     TCanvas c;
     h->Draw();
-    c.SaveAs("3_rdataframe.png");
+    c.SaveAs("3_rdataframe_jitted.png");
 }
