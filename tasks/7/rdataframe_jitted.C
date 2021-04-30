@@ -24,7 +24,7 @@ ROOT::RVec<int> good_jets(Vec<float> eta1, Vec<float> phi1, Vec<float> pt2, Vec<
 }
 
 
-void rdataframe() {
+void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto h = df.Filter("nJet > 0", "At least one jet")
@@ -37,5 +37,5 @@ void rdataframe() {
 
     TCanvas c;
     h->Draw();
-    c.SaveAs("7_rdataframe.png");
+    c.SaveAs("7_rdataframe_jitted.png");
 }

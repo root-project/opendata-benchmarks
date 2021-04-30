@@ -38,7 +38,7 @@ float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
 }
 
 
-void rdataframe() {
+void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto df2 = df.Filter("nElectron + nMuon > 2", "At least three leptons")
@@ -61,5 +61,5 @@ void rdataframe() {
     h1->Draw();
     c.cd(2);
     h2->Draw();
-    c.SaveAs("8_rdataframe.png");
+    c.SaveAs("8_rdataframe_jitted.png");
 }

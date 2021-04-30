@@ -29,7 +29,7 @@ ROOT::RVec<std::size_t> find_trijet(Vec<float> pt, Vec<float> eta, Vec<float> ph
 };
 
 
-void rdataframe() {
+void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto df2 = df.Filter("nJet >= 3", "At least three jets")
@@ -45,5 +45,5 @@ void rdataframe() {
     h1->Draw();
     c.cd(2);
     h2->Draw();
-    c.SaveAs("6_rdataframe.png");
+    c.SaveAs("6_rdataframe_jitted.png");
 }

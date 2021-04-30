@@ -70,7 +70,7 @@ void rdataframe() {
     h1->Draw();
     c.cd(2);
     h2->Draw();
-    c.SaveAs("8_rdataframe.png");
+    c.SaveAs("8_rdataframe_compiled.png");
 }
 
 int main() {

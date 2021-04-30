@@ -17,7 +17,7 @@ auto compute_dimuon_masses(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
 };
 
 
-void rdataframe() {
+void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto h = df.Filter("nMuon >= 2", "At least two muons")
@@ -28,5 +28,5 @@ void rdataframe() {
 
     TCanvas c;
     h->Draw();
-    c.SaveAs("5_rdataframe.png");
+    c.SaveAs("5_rdataframe_jitted.png");
 }
