@@ -61,7 +61,7 @@ void rdataframe() {
                  .Define("AdditionalLepton_pt", additional_lepton_pt,
                          {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
                  .Filter([](float pt) { return pt != -999; }, {"AdditionalLepton_pt"}, "No valid lepton pair found.");
-    auto h1 = df2.Histo1D<float>({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_sumet");
+    auto h1 = df2.Histo1D<float>({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_pt");
     auto h2 = df2.Histo1D<float>({"", ";Lepton p_{T} (GeV);N_{Events}", 100, 15, 60}, "AdditionalLepton_pt");
 
     TCanvas c;
