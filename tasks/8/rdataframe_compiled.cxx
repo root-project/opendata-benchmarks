@@ -6,10 +6,10 @@
 template <typename T> using Vec = const ROOT::RVec<T>&;
 using FourVector = ROOT::Math::PtEtaPhiMVector;
 
-float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge, Vec<int> flavour)
+unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge, Vec<int> flavour)
 {
     const auto c = Combinations(pt, 2);
-    float lep_pt = -999;
+    unsigned int lep_idx = -999;
     float best_mass = 99999;
     int best_i1 = -1;
     int best_i2 = -1;
@@ -33,13 +33,17 @@ float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
         }
     }
 
-    if (best_i1 == -1) return lep_pt;
+    if (best_i1 == -1) return lep_idx;
 
+    float max_pt = -999;
     for (auto i = 0; i < pt.size(); i++) {
-        if (i != best_i1 && i != best_i2 && pt[i] > lep_pt) lep_pt = pt[i];
+        if (i != best_i1 && i != best_i2 && pt[i] > max_pt) {
+            max_pt = pt[i];
+            lep_idx = i;
+        }
     }
 
-    return lep_pt;
+    return lep_idx;
 }
 
 void rdataframe() {
@@ -47,29 +51,31 @@ void rdataframe() {
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
     auto concatF = [](const ROOT::RVec<float> &a, const ROOT::RVec<float> &b) { return Concatenate(a, b); };
     auto concatI = [](const ROOT::RVec<int> &a, const ROOT::RVec<int> &b) { return Concatenate(a, b); };
-    auto df2 = df.Filter([](unsigned int nElectron, unsigned int nMuon) { return nElectron + nMuon > 2; },
-                            {"nElectron", "nMuon"}, "At least three leptons")
-                 .Define("Lepton_pt", concatF, {"Muon_pt", "Electron_pt"})
-                 .Define("Lepton_eta", concatF, {"Muon_eta", "Electron_eta"})
-                 .Define("Lepton_phi", concatF, {"Muon_phi", "Electron_phi"})
-                 .Define("Lepton_mass", concatF, {"Muon_mass", "Electron_mass"})
-                 .Define("Lepton_charge", concatI, {"Muon_charge", "Electron_charge"})
-                 .Define("Lepton_flavour",[](unsigned int nMuon, unsigned int nElectron) {
-                                              return Concatenate(ROOT::RVec<int>(nMuon, 0), ROOT::RVec<int>(nElectron, 1));
-                                          },
-                         {"nMuon", "nElectron"})
-                 .Define("AdditionalLepton_pt", additional_lepton_pt,
-                         {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
-                 .Filter([](float pt) { return pt != -999; }, {"AdditionalLepton_pt"}, "No valid lepton pair found.");
-    auto h1 = df2.Histo1D<float>({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_pt");
-    auto h2 = df2.Histo1D<float>({"", ";Lepton p_{T} (GeV);N_{Events}", 100, 15, 60}, "AdditionalLepton_pt");
+    auto transverseMass = [](const ROOT::RVec<float> &Lepton_pt, const ROOT::RVec<float> &Lepton_phi,
+                             float MET_pt, float MET_phi, unsigned int idx) {
+        return sqrt(2.0 * Lepton_pt[idx] * MET_pt * (1.0 - cos(ROOT::VecOps::DeltaPhi(MET_phi, Lepton_phi[idx]))));
+    };
+    auto h = df.Filter([](unsigned int nElectron, unsigned int nMuon) { return nElectron + nMuon > 2; },
+                       {"nElectron", "nMuon"}, "At least three leptons")
+               .Define("Lepton_pt", concatF, {"Muon_pt", "Electron_pt"})
+               .Define("Lepton_eta", concatF, {"Muon_eta", "Electron_eta"})
+               .Define("Lepton_phi", concatF, {"Muon_phi", "Electron_phi"})
+               .Define("Lepton_mass", concatF, {"Muon_mass", "Electron_mass"})
+               .Define("Lepton_charge", concatI, {"Muon_charge", "Electron_charge"})
+               .Define("Lepton_flavour",[](unsigned int nMuon, unsigned int nElectron) {
+                                            return Concatenate(ROOT::RVec<int>(nMuon, 0), ROOT::RVec<int>(nElectron, 1));
+                                        },
+                       {"nMuon", "nElectron"})
+               .Define("AdditionalLepton_idx", additional_lepton_idx,
+                       {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
+               .Filter([](unsigned int idx) { return idx != -999; }, {"AdditionalLepton_idx"}, "No valid lepton pair found.")
+               .Define("TransverseMass", transverseMass,
+                       {"Lepton_pt", "Lepton_phi", "MET_pt", "MET_phi", "AdditionalLepton_idx"})
+
+               .Histo1D<double>({"", ";Transverse mass (GeV);N_{Events}", 100, 0, 200}, "TransverseMass");
 
     TCanvas c;
-    c.Divide(2, 1);
-    c.cd(1);
-    h1->Draw();
-    c.cd(2);
-    h2->Draw();
+    h->Draw();
     c.SaveAs("8_rdataframe_compiled.png");
 }
 
