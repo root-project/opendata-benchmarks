@@ -1,10 +1,10 @@
 template <typename T> using Vec = const ROOT::RVec<T>&;
 using FourVector = ROOT::Math::PtEtaPhiMVector;
 
-float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge, Vec<int> flavour)
+unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge, Vec<int> flavour)
 {
     const auto c = Combinations(pt, 2);
-    float lep_pt = -999;
+    unsigned int lep_idx = -999;
     float best_mass = 99999;
     int best_i1 = -1;
     int best_i2 = -1;
@@ -28,38 +28,38 @@ float additional_lepton_pt(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
         }
     }
 
-    if (best_i1 == -1) return lep_pt;
+    if (best_i1 == -1) return lep_idx;
 
+    float max_pt = -999;
     for (auto i = 0; i < pt.size(); i++) {
-        if (i != best_i1 && i != best_i2 && pt[i] > lep_pt) lep_pt = pt[i];
+        if (i != best_i1 && i != best_i2 && pt[i] > max_pt) {
+            max_pt = pt[i];
+            lep_idx = i;
+        }
     }
 
-    return lep_pt;
+    return lep_idx;
 }
 
 
 void rdataframe_jitted() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
-    auto df2 = df.Filter("nElectron + nMuon > 2", "At least three leptons")
-                 .Define("Lepton_pt", "Concatenate(Muon_pt, Electron_pt)")
-                 .Define("Lepton_eta", "Concatenate(Muon_eta, Electron_eta)")
-                 .Define("Lepton_phi", "Concatenate(Muon_phi, Electron_phi)")
-                 .Define("Lepton_mass", "Concatenate(Muon_mass, Electron_mass)")
-                 .Define("Lepton_charge", "Concatenate(Muon_charge, Electron_charge)")
-                 .Define("Lepton_flavour", "Concatenate(ROOT::RVec<int>(nMuon, 0), ROOT::RVec<int>(nElectron, 1))")
-                 .Define("AdditionalLepton_pt", additional_lepton_pt,
-                         {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
-                 .Filter("AdditionalLepton_pt != -999", "No valid lepton pair found.");
-    auto h1 = df2.Histo1D({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_sumet");
-    auto h2 = df2.Define("foo", "42")
-                 .Histo1D({"", ";Lepton p_{T} (GeV);N_{Events}", 100, 15, 60}, "AdditionalLepton_pt");
+    auto h = df.Filter("nElectron + nMuon > 2", "At least three leptons")
+               .Define("Lepton_pt", "Concatenate(Muon_pt, Electron_pt)")
+               .Define("Lepton_eta", "Concatenate(Muon_eta, Electron_eta)")
+               .Define("Lepton_phi", "Concatenate(Muon_phi, Electron_phi)")
+               .Define("Lepton_mass", "Concatenate(Muon_mass, Electron_mass)")
+               .Define("Lepton_charge", "Concatenate(Muon_charge, Electron_charge)")
+               .Define("Lepton_flavour", "Concatenate(ROOT::RVec<int>(nMuon, 0), ROOT::RVec<int>(nElectron, 1))")
+               .Define("AdditionalLepton_idx", additional_lepton_idx,
+                       {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
+               .Filter("AdditionalLepton_idx != -999", "No valid lepton pair found.")
+               .Define("TransverseMass",
+                       "sqrt(2.0 * Lepton_pt[AdditionalLepton_idx] * MET_pt * (1.0 - cos(ROOT::VecOps::DeltaPhi(MET_phi, Lepton_phi[AdditionalLepton_idx]))))")
+               .Histo1D({"", ";Transverse mass (GeV);N_{Events}", 100, 0, 200}, "TransverseMass");
 
     TCanvas c;
-    c.Divide(2, 1);
-    c.cd(1);
-    h1->Draw();
-    c.cd(2);
-    h2->Draw();
+    h->Draw();
     c.SaveAs("8_rdataframe_jitted.png");
 }
