@@ -28,8 +28,8 @@ void rdataframe() {
     auto h = df.Filter([](unsigned int n) { return n >= 2; }, {"nMuon"}, "At least two muons")
                .Define("Dimuon_mass", compute_dimuon_masses,
                        {"Muon_pt", "Muon_eta", "Muon_phi", "Muon_mass", "Muon_charge"})
-               .Filter([](const ROOT::RVec<float> &mass) { return Sum(mass > 60 && mass < 100) > 0; }, {"Dimuon_mass"},
-                       "At least one dimuon system with mass in range [60, 100]")
+               .Filter([](const ROOT::RVec<float> &mass) { return Sum(mass > 60 && mass < 120) > 0; }, {"Dimuon_mass"},
+                       "At least one dimuon system with mass in range [60, 120]")
                .Histo1D<float>({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_pt");
 
     TCanvas c;
