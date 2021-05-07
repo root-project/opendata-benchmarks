@@ -24,7 +24,7 @@ void rdataframe_jitted() {
                .Define("Dimuon_mass", compute_dimuon_masses, {"Muon_pt", "Muon_eta", "Muon_phi", "Muon_mass", "Muon_charge"})
                .Filter("Sum(Dimuon_mass > 60 && Dimuon_mass < 120) > 0",
                        "At least one dimuon system with mass in range [60, 120]")
-               .Histo1D({"", ";MET (GeV);N_{Events}", 100, 0, 2000}, "MET_pt");
+               .Histo1D({"", ";MET (GeV);N_{Events}", 100, 0, 200}, "MET_pt");
 
     TCanvas c;
     h->Draw();
