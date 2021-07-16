@@ -3,7 +3,7 @@
 **NOTE:** This repo contains two versions of the RDataFrame implementation. One version includes just-in-time compilation and the other is fully compiled and therefore optimized for performance. Also, running the files as C++ macro, via the ROOT interpreter cling, will result in a reduced runtime performance due to missing optimizations. To compile any of the benchmarks named `*_compiled.cxx`, source ROOT and run following line:
 
 ```
-g++ file.cxx $(root-config --cflags --libs) -O3
+g++ -O3 -o task task.cxx $(root-config --cflags --libs)
 ```
 
 To run the macros (named `*_jitted.C`) efficiently with optimizations, please use the following command:
