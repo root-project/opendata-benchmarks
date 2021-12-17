@@ -4,10 +4,10 @@
 void rdataframe() {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df("Events", "root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root");
-    auto filter = [](const ROOT::RVec<float> & pt, const ROOT::RVec<float> & eta) {
+    auto filter = [](const ROOT::RVec<float> & pt) {
             return Sum(pt > 40) > 1;
     };
-    auto h = df.Filter(filter, {"Jet_pt", "Jet_eta"}, "More than one jet with pt > 40")
+    auto h = df.Filter(filter, {"Jet_pt"}, "More than one jet with pt > 40")
                .Histo1D<float>({"", ";MET (GeV);N_{Events}", 100, 0, 200}, "MET_pt");
 
     TCanvas c;
