@@ -12,7 +12,7 @@ ROOT::RVec<std::size_t> find_trijet(Vec<XYZTVector> jets) {
   float distance = 1e9;
   const auto top_mass = 172.5;
   std::size_t idx = 0;
-  for (auto i = 0; i < c[0].size(); i++) {
+  for (auto i = 0u; i < c[0].size(); i++) {
     auto p1 = jets[c[0][i]];
     auto p2 = jets[c[1][i]];
     auto p3 = jets[c[2][i]];
