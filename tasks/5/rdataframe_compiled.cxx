@@ -10,7 +10,7 @@ auto compute_dimuon_masses(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<fl
 {
     ROOT::RVec<float> masses;
     const auto c = ROOT::VecOps::Combinations(pt, 2);
-    for (auto i = 0; i < c[0].size(); i++) {
+    for (auto i = 0u; i < c[0].size(); i++) {
         const auto i1 = c[0][i];
         const auto i2 = c[1][i];
         if (charge[i1] == charge[i2]) continue;

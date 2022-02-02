@@ -18,7 +18,7 @@ unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi
         return ROOT::Math::PtEtaPhiMVector(pt[idx], eta[idx], phi[idx], mass[idx]);
     };
 
-    for (auto i = 0; i < c[0].size(); i++) {
+    for (auto i = 0u; i < c[0].size(); i++) {
         const auto i1 = c[0][i];
         const auto i2 = c[1][i];
         if (charge[i1] == charge[i2]) continue;
@@ -36,7 +36,7 @@ unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi
     if (best_i1 == -1) return lep_idx;
 
     float max_pt = -999;
-    for (auto i = 0; i < pt.size(); i++) {
+    for (auto i = 0; i < int(pt.size()); i++) {
         if (i != best_i1 && i != best_i2 && pt[i] > max_pt) {
             max_pt = pt[i];
             lep_idx = i;
@@ -68,7 +68,7 @@ void rdataframe() {
                        {"nMuon", "nElectron"})
                .Define("AdditionalLepton_idx", additional_lepton_idx,
                        {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
-               .Filter([](unsigned int idx) { return idx != -999; }, {"AdditionalLepton_idx"}, "No valid lepton pair found.")
+               .Filter([](int idx) { return idx != -999; }, {"AdditionalLepton_idx"}, "No valid lepton pair found.")
                .Define("TransverseMass", transverseMass,
                        {"Lepton_pt", "Lepton_phi", "MET_pt", "MET_phi", "AdditionalLepton_idx"})
 

@@ -19,7 +19,7 @@ ROOT::RVec<int> find_isolated_jets(Vec<float> eta1, Vec<float> phi1, Vec<float> 
     }
 
     const auto c = ROOT::VecOps::Combinations(eta1, eta2_ptcut);
-    for (auto i = 0; i < c[0].size(); i++) {
+    for (auto i = 0u; i < c[0].size(); i++) {
         const auto i1 = c[0][i];
         const auto i2 = c[1][i];
         const auto dr = ROOT::VecOps::DeltaR(eta1[i1], eta2_ptcut[i2], phi1[i1], phi2_ptcut[i2]);
