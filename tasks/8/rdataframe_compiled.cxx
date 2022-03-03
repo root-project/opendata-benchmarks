@@ -5,13 +5,14 @@
 
 template <typename T> using Vec = const ROOT::RVec<T>&;
 using FourVector = ROOT::Math::PtEtaPhiMVector;
+constexpr static unsigned int PLACEHOLDER_VALUE = 99999;
 
 unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> mass, Vec<int> charge, Vec<int> flavour)
 {
     const auto c = Combinations(pt, 2);
-    float best_mass = 99999;
-    unsigned int best_i1 = 99999;
-    unsigned int best_i2 = 99999;
+    float best_mass = PLACEHOLDER_VALUE;
+    unsigned int best_i1 = PLACEHOLDER_VALUE;
+    unsigned int best_i2 = PLACEHOLDER_VALUE;
     const auto z_mass = 91.2;
     const auto make_p4 = [&](std::size_t idx) {
         return ROOT::Math::PtEtaPhiMVector(pt[idx], eta[idx], phi[idx], mass[idx]);
@@ -30,10 +31,10 @@ unsigned int additional_lepton_idx(Vec<float> pt, Vec<float> eta, Vec<float> phi
         }
     }
 
-    if (best_i1 == 99999) return 99999;
+    if (best_i1 == PLACEHOLDER_VALUE) return PLACEHOLDER_VALUE;
 
     float max_pt = -999;
-    unsigned int lep_idx = 99999;
+    unsigned int lep_idx = PLACEHOLDER_VALUE;
     for (auto i = 0u; i < pt.size(); i++) {
         if (i != best_i1 && i != best_i2 && pt[i] > max_pt) {
             max_pt = pt[i];
@@ -66,7 +67,7 @@ void rdataframe() {
                        {"nMuon", "nElectron"})
                .Define("AdditionalLepton_idx", additional_lepton_idx,
                        {"Lepton_pt", "Lepton_eta", "Lepton_phi", "Lepton_mass", "Lepton_charge", "Lepton_flavour"})
-               .Filter([](unsigned int idx) { return idx != 99999; }, {"AdditionalLepton_idx"}, "No valid lepton pair found.")
+               .Filter([](unsigned int idx) { return idx != PLACEHOLDER_VALUE; }, {"AdditionalLepton_idx"}, "No valid lepton pair found.")
                .Define("TransverseMass", transverseMass,
                        {"Lepton_pt", "Lepton_phi", "MET_pt", "MET_phi", "AdditionalLepton_idx"})
 
