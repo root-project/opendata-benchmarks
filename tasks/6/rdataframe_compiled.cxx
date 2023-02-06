@@ -7,24 +7,29 @@ template <typename T> using Vec = const ROOT::RVec<T>&;
 using ROOT::Math::XYZTVector;
 
 ROOT::RVec<std::size_t> find_trijet(Vec<XYZTVector> jets) {
-  const auto c = ROOT::VecOps::Combinations(jets, 3);
-
+  constexpr std::size_t n = 3;
   float distance = 1e9;
   const auto top_mass = 172.5;
-  std::size_t idx = 0;
-  for (auto i = 0u; i < c[0].size(); i++) {
-    auto p1 = jets[c[0][i]];
-    auto p2 = jets[c[1][i]];
-    auto p3 = jets[c[2][i]];
-    const auto tmp_mass = (p1 + p2 + p3).mass();
-    const auto tmp_distance = std::abs(tmp_mass - top_mass);
-    if (tmp_distance < distance) {
-      distance = tmp_distance;
-      idx = i;
+  std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
+
+  for (std::size_t i = 0; i <= jets.size() - n; i++) {
+    auto p1 = jets[i];
+    for (std::size_t j = i + 1; j <= jets.size() - n + 1; j++) {
+      auto p2 = jets[j];
+      for (std::size_t k = j + 1; k <= jets.size() - n + 2; k++) {
+        auto p3 = jets[k];
+        const auto tmp_mass = (p1 + p2 + p3).mass();
+        const auto tmp_distance = std::abs(tmp_mass - top_mass);
+        if (tmp_distance < distance) {
+          distance = tmp_distance;
+          idx1 = i;
+          idx2 = j;
+          idx3 = k;
+        }
+      }
     }
   }
-
-  return {c[0][idx], c[1][idx], c[2][idx]};
+  return {idx1, idx2, idx3};
 }
 
 
